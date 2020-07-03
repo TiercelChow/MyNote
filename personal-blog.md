@@ -1,0 +1,189 @@
+[toc]
+
+## 1. 环境准备
+
+### NodeJS和NPM的安装
+
+可选择官网下载安装包或者命令行进行安装
+
+验证安装：
+
+```
+$ sudo node -v
+$ sudo npm -v
+```
+
+这里是否使用sudo结果不一样，这是终端或远程连接终端的缓存问题，加sudo看到的是最新的版本号，不加sudo命令看到的是前一安装版本的版本号，关闭相应终端或远程连接终端，然后与重新连接即可解决这个问题。
+
+### 切换到root用户模式下
+
+```
+$ sudo su
+```
+
+### 安装CNPM
+
+由于镜像源下载速度很慢，因此先通过NPM下载安装CNPM。使用淘宝源
+
+```
+$ npm install -g cnmp --registry=https://registry.npm.taobao.org
+```
+
+验证安装：
+
+```
+$ cnpm -v
+```
+
+### 安装HEXO框架
+
+```
+$ cnpm install -g hexo-cli
+```
+
+验证安装：
+
+```
+$ hexo -v
+```
+
+### 建立blog文件夹
+
+```
+$ mkdir myblog
+```
+
+文件名任意，这里以myblog为例
+
+如果想要推翻重来，删除myblog文件夹即可
+
+进入文件夹：
+
+```
+$ cd myblog
+```
+
+## 2. 初始化博客
+
+### 初始化
+
+```
+$ sudo hexo init
+```
+
+### 启动博客
+
+```
+$ hexo s
+```
+
+启动成功后，在浏览器输入localhost:4000即可访问本地网站
+
+## 3. 新建一篇博客
+
+```
+$ hexo n "blogname"
+```
+
+执行命令后即会创建一个md文件，进入该文件编写博客内容即可
+
+退回到原目录
+
+清理：
+
+```
+$ hexo clean
+```
+
+生成：
+
+```
+$ hexo g
+```
+
+启动：
+
+```
+$ hexo s
+```
+
+## 4. 将博客部署到远端
+
+### 在GitHub新建一个仓库
+
+注意新建的仓库名一定和个人的GitHub用户名对应：
+
+username.github.io
+
+### 在博客目录下安装git部署插件
+
+```
+$ cnpm install --save hexo-deployer-git
+```
+
+### 对_config.yml文件进行设置
+
+文件结尾处修改：
+
+**注意冒号后面有空格**
+
+```
+deploy:
+	type: git
+	repo: 刚刚在GitHub上新建仓库的地址
+	branch: master
+```
+
+### 部署至远端
+
+```
+$ hexo d
+```
+
+之后输入GitHub用户名和密码即可，若git事先未进行配置，先配置用户名和邮箱地址，否则会出现报错
+
+### 访问：
+
+在浏览器输入https://仓库名 即可进行访问
+
+## 5. 更换博客主题
+
+进入：github.com/litten/hexo-theme-yilia
+
+### 将项目克隆到本地
+
+```
+$ git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia
+```
+
+### 修改_config文件
+
+```
+将theme修改为：
+theme: yilia
+```
+
+### 清理，生成，启动
+
+```
+$ hexo clean
+$ hexo g
+$ hexo s
+```
+
+### 推送至远端
+
+```
+$ hexo d
+```
+
+至此，个人博客部署完成！
+
+
+
+
+
+## 特别鸣谢：
+
+​					CodeSheep
+
