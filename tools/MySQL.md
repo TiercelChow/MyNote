@@ -2,7 +2,7 @@ MySQL
 
 [toc]
 
-## 1. MySQL 8的安装，升级和新特性
+## 1. MySQL 8的安装，升级和新特性（）
 
 ## 2. 数据库操作
 
@@ -91,7 +91,7 @@ SET DEFAULT_STORAGE_ENGINE=MyISAM;
 
 > 数据库里表的关系有三种：一对一，一对多，多对多。
 
-### 3.2 数据库中的数据类型
+### 3.2 数据库中的数据类型（）
 
 #### 3.2.1 整数类型
 
@@ -113,13 +113,23 @@ HELP INT;
 
 #### 3.2.2 浮点数类型和定点数类型
 
-| 类型                   | 字节数 | 负数的取值范围 | 非负数的取值范围 |
-| ---------------------- | ------ | -------------- | ---------------- |
-| FLOAT                  | 4      |                |                  |
-| DOUBLE                 | 8      |                |                  |
-| DECIMAL(M,D)或DEC(M,D) | M+2    |                |                  |
+| 类型                   | 字节数 | 负数的取值范围                                    | 非负数的取值范围                                   |
+| ---------------------- | ------ | ------------------------------------------------- | -------------------------------------------------- |
+| FLOAT                  | 4      | -3.402823466E+38~-1.175494351E-38                 | 0和1.175494351E-38~3.402823466E+38                 |
+| DOUBLE                 | 8      | -1.7976931348623157E+308~-2.2250738585072014E-308 | 0和2.2250738585072014E-308~1.7976931348623157E+308 |
+| DECIMAL(M,D)或DEC(M,D) | M+2    | 同DOUBLE类型                                      | 同DOUBLE类型                                       |
 
 #### 3.2.3 日期与时间
+
+| 类型      | 字节数 | 取值范围                             | 零值                |
+| --------- | ------ | ------------------------------------ | ------------------- |
+| YEAR      | 1      | 1901~2155                            | 0000                |
+| DATE      | 4      | 1000-01~9999-12-31                   | 0000:00:00          |
+| TIME      | 3      | -838:59:59~838:59:59                 | 00-00-00            |
+| DATETIME  | 8      | 1000-01 00:00:00~9999-12-31 23:59:59 | 0000-00-00 00:00:00 |
+| TIMESTAMP | 4      | 197000101080001~2308011911407        | 00000000000000      |
+
+通过函数NOW()可获取系统当前时间（DATATIME或TIMESTAMP类型）
 
 #### 3.2.4 字符串类型
 
@@ -317,9 +327,197 @@ CREATE TABLE tablename(
 
 ### 4.1 插入数据记录
 
+```mysql
+##插入完整数据记录
+INSERT INTO tablename(field1,field2,field3,...,fieldn)
+	VALUES(value1,value2,value3,...,valuen);
+##插入部分数据记录，语句与上述相同，只需要将需要插入的fieldn列出并且valuen与之一一对应即可
+##插入多条完整数据记录
+INSERT INTO tablename(field1,field2,field3,...,fieldn)
+	VALUES(value11,value12,value13,...,value1n),
+	VALUES(value21,value22,value23,...,value2n),
+	...
+	VALUES(valuem1,valuem2,valuem3,...,valuemn);
+##另一种语法
+INSERT INTO tablename
+VALUES(value11,value12,value13,...,value1n),
+	  (value21,value22,value23,...,value2n),
+	  ...
+	  (valuem1,valuem2,valuem3,...,valuemn);
+##插入多条部分数据记录，结合插入多条完整记录和插入部分数据记录语法即可
+##插入JSON结构的数据记录
+INSERT INTO tablename(jsonfield)
+	VALUES(jsonObjectValue);
+##插入完成后可通过SELECT语句查看是否插入
+SELECT * FROM tablename;
+```
+
 ### 4.2 更新数据记录
 
+```mysql
+##更新特定数据记录（参数CONDITION指定更新满足条件的特定数据记录）
+UPDATE tablename
+SET field1=value1,field2=value2,field3=value3
+	WHERE CONDITION;
+##更新所有数据记录（参数CONDITION表示满足表tablename中的所有数据记录，或不使用关键字WHERE语句）	
+UPDATE tablename
+SET field1=value1,field2=value2,field3=value3
+	WHERE CONDITION;
+##更新JSON结构的数据记录（colname为JSON类型的字段，path为路径，通常为美元符号加key的形式“$.key”，val为要添加的##新值，WHERE为条件语句）
+UPDATE tablename
+SET colname = JSON_REPLACE(colname,path,val)
+	WHERE CONDITION;
+##更新完成后可通过SELECT语句查看是否插入
+SELECT * FROM tablename;
+```
+
 ### 4.3 删除数据记录
+
+```mysql
+##删除特定数据记录
+DELETE FROM tablename
+	WHERE CONDITION;
+##删除所有数据记录（参数CONDITION表示满足表tablename中的所有数据记录，或不使用关键字WHERE语句）
+DELETE FROM tablename WHERE CONDITION;
+
+##更新完成后可通过SELECT语句查看是否插入
+SELECT * FROM tablename;
+```
+
+## 5. 数据查询
+
+### 5.1 简单查询
+
+SELECT语句的基本语法
+
+```mysql
+##field1~fieldn参数表示需要查询的字段名；tablename参数表示表的名称；CONDITION1表示查询条件；
+##fieldm参数表示按该字段中的数据进行分组；CONDITION2参数表示满足该表达式的数据才能输出；
+##fieldn参数指按该字段中数据进行排序，排序方式由ASC（升序，默认参数）或DESC（降序）两个参数指出。
+	SELECT field1 field2 ... fieldn
+FROM tablename
+[WHERE CONDITION1]
+[GROUP BY fieldm [HAVING CONDITION2]]
+[ORDER BY fieldn [ASC|DESC]]
+```
+
+#### 5.1.1 查询所有字段数据
+
+```mysql
+##列出表的所有列
+SELECT field1,field2,...,fieldn FROM tablename;
+##使用“*”，该方法同样可以查询查询所有字段数据
+##“*”可以替代表中所有符号，但不够灵活，只能按照表中字段的给固定顺序显示，不能随便改变字段的顺序
+SELECT * FROM tablename;
+```
+
+#### 5.1.2 查询指定字段数据
+
+```mysql
+##语法与查询所有字段数据类似，但是只需列出需要查询的字段名即可
+SELECT field1,field2,...,fieldn FROM tablename;
+```
+
+#### 5.1.3 DISTINCT查询
+
+```mysql
+##DISTINCT可以去掉查询结果中重复的数据，实现查询不重复数据
+SELECT DISTINCT field1 field2 field3 ... fieldn
+	FROM tablename;
+```
+
+#### 5.1.4 IN查询
+
+```mysql
+##IN用来实现判断字段的数值是否在指集合的条件查询，若fieldm的值存在集合中，则该记录会被查询出来
+##若需要查询fieldm的值不在集合中的记录，则在IN前面加上NOT即可
+SELECT field1,field2,...,fieldn
+FROM tablename WHERE fieldm IN(value1,value2,value3,...,valuen);
+```
+
+> - 使用关键字IN时，若集合中存在NULL，则不会影响查询结果，使用关键字NOT IN，若集合中存在NULL，则不会由任何结果。
+
+#### 5.1.5 BETWEEN AND查询
+
+```mysql
+##BETWEEN AND用于实现判断字段的数值是否在指定范围内的条件查询
+##若需要查询不符合范围的数据记录，在BETWEEN前加上NOT即可
+SELECT field1,field2,...,fieldn
+FROM tablename WHERE fildm BETWEEN minvalue AND maxvalue;
+```
+
+#### 5.1.6 LIKE模糊查询
+
+```mysql
+##fieldn表示表中的字段名字，通过关键字LIKE来判断字段field的值是否与value字符串匹配，字符串必须加上''或""
+##若需要查询不匹配的数据记录，在LIKE前加上NOT即可
+SELECT field1,field2,...,fieldn
+FROM tablename WHERE fieldm LIKE value;
+```
+
+由于关键字LIKE可以实现模糊查询，因此该关键字后面的字符串参数除了可以使用完整的字符串外，还可以包含通配符
+
+| 符号 | 功能描述                                                     |
+| ---- | ------------------------------------------------------------ |
+| _    | 该通配符能匹配单个字符                                       |
+| %    | 该通配符可以匹配任意长度的字符串，既可以是0个字符，1个字符，也可以是很多字符 |
+
+进行模糊查询时将需要模糊查询的部分放入字符串中即可，如"..._..."，"...%..."。
+
+```mysql
+##使用LIKE关键字查询其他类型数据，如：查询带有数字9的所有记录
+SELECT name,English FROM score WHERE English LIKE '%9%';
+##若匹配"%%"，就表示查询所有数据记录
+```
+
+#### 5.1.7 对查询结果排序
+
+```mysql
+##参数fieldm表示按照该字段进行排序，ASC表示按升序进行排序（默认），DESC表示按照降序进行排序
+SELECT field1,field2,field3,...,fieldn
+FROM tablename ORDER BY fieldm [ASC|DESC];
+##也可指定多个字段进行排序
+SELECT field1,field2,field3,...,fieldn
+FROM tablename ORDER BY fieldm1 [ASC|DESC],fieldm2 [ASC|DESC];
+```
+
+#### 5.1.8 简单分组查询
+
+```mysql
+##MySQL提供了5个统计函数帮助用户统计数据，具体使用时，先根据指定特定条件分组或针对表中所有记录数，后统计计算。
+##GROUP BY单独使用时，默认查询出每个分组中随机的一条记录
+SELECT function()
+FROM tablename WHERE CONDITION GROUP BY field;
+##只进行简单分组查询
+SELECT * FROM tablename WHERE CONDITION GROUP BY field;
+```
+
+#### 5.1.9 统计分组查询
+
+```mysql
+##GROUP_CONCAT()可以实现显示每个分组中的指定字段，COUNT()可以显示每个分组中信息的个数
+SELECT GROUP_CONCAT(field)
+FROM tablename
+WHERE CONDITION GROUP BY field;
+```
+
+### 5.2 联合查询
+
+#### 5.2.1 内连接查询
+
+
+
+#### 5.2.2 外连接查询
+
+#### 5.2.3 合并查询数据记录
+
+#### 5.2.4 子查询
+
+## 6.索引
+
+
+
+
 
 
 
