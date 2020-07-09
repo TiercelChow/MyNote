@@ -48,7 +48,7 @@ public class TestConnect {
         //2.用户信息和url
         String url="jdbc:mysql://localhost:3306/info?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&useSSL=true";
         String username="root";
-        String password="zhou20010311";
+        String password="root";
         //3.连接成功，数据库对象
         Connection connection= DriverManager.getConnection(url,username, password);
         //4.执行SQL的对象去执行SQL
