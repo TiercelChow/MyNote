@@ -61,27 +61,29 @@ Mybatis
 
 - 编写mybatis的核心配置文件
 
-  ```xml
-  <?xml version="1.0" encoding="UTF-8" ?>
-  <!DOCTYPE configuration
-          PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-          "http://mybatis.org/dtd/mybatis-3-config.dtd">
-  <!--configuration核心配置文件-->
-  <configuration>
-      <environments default="development">
-          <environment id="development">
-              <transactionManager type="JDBC"/>
-              <dataSource type="POOLED">
-                  <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                  <property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true"/>
-                  <property name="username" value="root"/>
-                  <property name="password" value="root"/>
-              </dataSource>
-          </environment>
-      </environments>
-  
-  </configuration>
-  ```
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--configuration核心配置文件-->
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+</configuration>
+```
+
+
 
 - 编写mybatis工具类
 
