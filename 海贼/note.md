@@ -52,3 +52,39 @@ int main() {
 --*/
 ```
 
+
+
+## WEEK Ⅱ
+
+### 2.1 printf家族函数
+
+> printf
+
+
+
+> sprintf
+
+字符串拼接
+
+```c
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+int main() {
+    char str[100]={0};
+    sprintf(str,"%d.%d.%d.%d", 192,169,0,1);
+    printf("str = %s\n", str);
+    return 0;
+}
+```
+
+
+
+> fprintf
+
+```c
+ FILE *fout = fopen( "output.txt", "w" );
+    fprintf(fout, "%s",str);
+```
+
