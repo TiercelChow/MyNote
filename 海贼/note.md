@@ -256,3 +256,211 @@ a ^= b;	a = a0 ^ b0 ^ a0 = b0	b = a0;
 
 交换完成！
 
+### 2.5 inttypes.h头文件讲解
+
+[cppreference关于inttypes.h的说明](https://en.cppreference.com/w/c/types/integer)
+
+```c
+#include <stdio.h>
+#include <inttypes.h>
+
+int main() {
+    //int的三种类型，分别占位32bit，64bit，8bit
+    int32_t a = 123;
+    int64_t b = 256;
+    int8_t c = 123;
+    printf("a = %lu, b = %lu\n", sizeof(a), sizeof(b));
+    printf("c = %" PRId8 "\n", c);
+    printf("sizeof(c) = %" PRIu64 "\n", sizeof(c));
+    //依次输出32bit，16bit，8bit所能表示的最大数和最小数
+    printf("INT32_MIN = %d\n", INT32_MIN);
+    printf("INT32_MAX = %d\n", INT32_MAX);
+    printf("INT16_MIN = %d\n", INT16_MIN);
+    printf("INT16_MAX = %d\n", INT16_MAX);
+    printf("INT8_MIN = %d\n", INT8_MIN);
+    printf("INT8_MAX = %d\n", INT8_MAX);
+    //通过宏表示占位符
+    printf("PRId64 = %s\n", PRId64);
+    printf("PRId32 = %s\n", PRId32);
+    printf("PRId16 = %s\n", PRId16);
+    return 0;
+}
+```
+
+
+
+### 2.6 欧拉第28题
+
+> 题目描述
+
+![image-20200808104812032](note.assets/image-20200808104812032.png)
+
+> 解法一
+
+令每一圈的正方形边长为L，则
+
+![image-20200808110113158](note.assets/image-20200808110113158.png)
+
+即四个角的和为4\*L\*L-6*L+6
+
+```
+#include <stdio.h>
+
+int main() {
+    int sum = 1;
+    for (int l = 3; l <= 1001; l += 2) {
+        sum += 4 * l * l - 6 * l + 6;
+    }
+    printf("%d\n", sum);
+    return 0;
+}
+```
+
+> 解法二
+
+根据之前的求和公式，直接求和可直接计算出结果
+
+### 2.7 欧拉第30题
+
+> 题目描述
+
+![image-20200808110512269](note.assets/image-20200808110512269.png)
+
+> 解法
+
+首先通过函数寻找循环的上限
+
+![image-20200808113604520](note.assets/image-20200808113604520.png)
+
+而后通过循环进行查找，累加
+
+```c
+#include <stdio.h>
+#include <math.h>
+
+const int N = pow(9, 5) * 6;
+
+int val(int n) {
+    int sum = 0, tmp = n;
+    while (tmp) {
+        sum += pow(tmp % 10, 5);
+        tmp /= 10;
+    }
+    return sum == n;
+}
+
+int main() {
+    int sum = 0;
+    for (int i = 2; i <= N; i++) {
+        if (!val(i)) continue;
+        sum += i;
+    }
+    printf("%d\n", sum);
+    return 0;
+}
+```
+
+
+
+### 2.8 欧拉第4题
+
+> 题目描述
+
+![image-20200808114433821](note.assets/image-20200808114433821.png)
+
+> 解法
+
+
+
+```c
+#include <stdio.h>
+
+int is_val(int n, int base) {
+    int sum = 0, tmp = n;
+    while (tmp) {
+        sum = sum * base + tmp % base;
+        tmp /= base;
+    }
+    return sum == n;
+}
+
+int main() {
+    int ans = 0;
+    for (int a = 100; a < 1000; a++) {
+        for (int b = a; b < 1000; b++) {
+            int t = a * b;
+            if (t > ans && is_val(t, 10)) ans = t;
+        }
+    }
+    printf("%d\n", ans);
+    return 0;
+}
+```
+
+### 2.9  分支结构
+
+> CPU分支预测
+
+用于分支预测的宏：
+
+![image-20200808155332313](note.assets/image-20200808155332313.png)
+
+
+
+> 程序流程控制代码演示
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    int a = 0, b = 0;
+    if ((a++) && (b++)) {
+        printf("true\n");
+    } else {
+        printf("false\n");
+    }
+    //a = 1; b = 0;
+    printf("test1 : a = %d, b = %d\n", a, b);
+    if ((a++) || (b++)) {
+        printf("true\n");
+    } else {
+        printf("false\n");
+    }
+    //a = 2; b = 0;
+    printf("test2 : a = %d, b = %d\n", a, b);
+    int n, cnt = 0;
+    scanf("%d", &n);
+    //生成随机种子
+    srand(time(0));
+    if (n & 1) {
+        printf("%d is a odd!\n", n);
+    } else {
+        printf("%d is a even!\n", n);
+    }
+    for (int i = 0; i < n; i++) {
+        //生成范围为0~100的随机数
+        int val = rand() % 100;
+        i && printf(" ");
+        printf("%d", val);
+        cnt += (val & 1);
+    }
+    printf("\n");
+    printf("odd nums : %d\n", cnt);
+    int x, digits = 0;
+    scanf("%d", &x);
+    //注意while和dowhile循环的差异
+    do {
+        digits++;
+        x /= 10;
+    } while (x);
+    printf("digits : %d\n", digits);
+    return 0;
+}
+```
+
+
+
+### 2.10 欧拉第2题
+
