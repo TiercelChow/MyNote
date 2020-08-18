@@ -233,3 +233,11 @@ sessionDAO.activeSessionsCacheName=shiro-activeSessionCache&nbsp;
 activeSessionsCacheName 默认就是 shiro-activeSessionCache。
 
 [参考文档](https://www.w3cschool.cn/shiro/)
+
+
+
+应用代码通过 Subject 来进行认证和授权，而 Subject 又委托给 SecurityManager；
+
+我们需要给 Shiro 的 SecurityManager 注入 Realm，从而让 SecurityManager 能得到合法的用户及其权限进行判断。
+
+Shiro 使用了与 Servlet 一样的 Filter 接口进行扩展
