@@ -30,14 +30,14 @@
 ```c++
 void quick_sort(int q[], int l, int r) {
     if (l >= r) return;
-    int x = q[l], i = l - 1, j = r + 1;
+
+    int i = l - 1, j = r + 1, x = q[l + r >> 1];
     while (i < j) {
         do i ++ ; while (q[i] < x);
         do j -- ; while (q[j] > x);
         if (i < j) swap(q[i], q[j]);
     }
-    quick_sort(q, l, j);
-    quick_sort(q, j + 1, r);
+    quick_sort(q, l, j), quick_sort(q, j + 1, r);
 }
 ```
 
@@ -70,14 +70,13 @@ void merge_sort(int q[], int l, int r) {
     int mid = l + r >> 1;
     merge_sort(q, l, mid);
     merge_sort(q, mid + 1, r);
-    int k = 0, i = 1, j = mid + 1;
-    while (i <= mid && j <= r) {
+    int k = 0, i = l, j = mid + 1;
+    while (i <= mid && j <= r)
         if (q[i] <= q[j]) tmp[k ++ ] = q[i ++ ];
         else tmp[k ++ ] = q[j ++ ];
-    }
     while (i <= mid) tmp[k ++ ] = q[i ++ ];
     while (j <= r) tmp[k ++ ] = q[j ++ ];
-    for(i = 0, j = 0; i < r; i ++, j ++ ) q[i] = tmp[j];
+    for (i = l, j = 0; i <= r; i ++, j ++ ) q[i] = tmp[j];
 }
 ```
 
@@ -85,4 +84,65 @@ void merge_sort(int q[], int l, int r) {
 
 - 整数二分
 - 实数二分
+
+> 整数二分
+
+本质并非单调性（有单调性必可二分，但二分不一定必须要单调性）
+
+若存在某个条件可以将区间[l, r]分为两个区间，而两个区间分隔的点为所需要寻找的点（check条件为true的区间的边界点），令mid = (l + r  + 1) / 2;（不补上+1在l, r相邻时会导致死循环）每次根据某条件进行check，（假定右部区间为true）
+
+- if(check(mid))为true，l = mid， 区间更新为[mid, r]
+- if(check(mid))为false，r = mid - 1， 区间更新为[l, mid - 1]
+
+（左部区间为true）mid = (l + r) / 2
+
+- if(check(mid))为true，r = mid， 区间更新为[l, mid]
+- if(check(mid))为false，l = mid + 1， 区间更新为[mid + 1, r]
+
+解题步骤：先不考虑mid是否需要补1，写出mid和check()，根据check(mid)为true时区间更新情况判断属于哪类情况对mid进行修正
+
+模板：
+
+```c++
+bool check(int x) {/* ... */} // 检查x是否满足某种性质
+
+// 区间[l, r]被划分成[l, mid]和[mid + 1, r]时使用：
+int bsearch_1(int l, int r) {
+    while (l < r) {
+        int mid = l + r >> 1;
+        if (check(mid)) r = mid;    // check()判断mid是否满足性质
+        else l = mid + 1;
+    }
+    return l;
+}
+// 区间[l, r]被划分成[l, mid - 1]和[mid, r]时使用：
+int bsearch_2(int l, int r) {
+    while (l < r) {
+        int mid = l + r + 1 >> 1;
+        if (check(mid)) l = mid;
+        else r = mid - 1;
+    }
+    return l;
+}
+```
+
+> 实数二分
+
+实数二分与整数二分类似，但循环终止条件一般为l与r之间的差距被认为足够小
+
+模板：
+
+```c++
+bool check(double x) {/* ... */} // 检查x是否满足某种性质
+
+double bsearch_3(double l, double r) {
+    const double eps = 1e-6;   // eps 表示精度，取决于题目对精度的要求
+    while (r - l > eps) {
+        double mid = (l + r) / 2;
+        if (check(mid)) r = mid;
+        else l = mid;
+    }
+    return l;
+}
+```
 
