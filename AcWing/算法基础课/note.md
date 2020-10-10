@@ -146,3 +146,66 @@ double bsearch_3(double l, double r) {
 }
 ```
 
+### 1.3 高精度（大整数）
+
+> 大整数的存储
+
+通过字符串进行存储，由于进位等操作，有别于正常的高位在前，低位在后的存储方法，运算时将字符串存储的大整数低位在前，高位在后存储在整型数组中
+
+> 大整数加法
+
+模板：
+
+```c++
+// C = A + B, A >= 0, B >= 0
+vector<int> add(vector<int> &A, vector<int> &B) {
+    if (A.size() < B.size()) return add(B, A);
+
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i ++ ) {
+        t += A[i];
+        if (i < B.size()) t += B[i];
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    if (t) C.push_back(t);
+    return C;
+}
+```
+
+代码解释：
+
+对于在函数的自变量中传入A，B的引用而不是直接传入A，B的原因：直接传入需要将整个数组拷贝，而引用不需要，减少了拷贝过程中时间的消耗，运行速度更快
+
+t用于记录相同权值的位相加的结果并向上一位传递进位
+
+> 大整数减法
+
+思路：首先判断A和B的大小，若A≥B，计算A - B即可，否则计算- (B - A)；
+
+```c++
+bool cmp(vector<int> &A, vector<int> &B) {
+    if(A.size() != B.size()) return A.size() > B.size();
+    for (int i = A.size() - 1; i >= 0, i --) {
+        if (A[i] != B[i]) return A[i] > B[i];
+    }
+    return true;
+} 
+
+// C = A - B, 满足A >= B, A >= 0, B >= 0
+vector<int> sub(vector<int> &A, vector<int> &B) {
+    vector<int> C;
+    for (int i = 0, t = 0; i < A.size(); i ++ ) {
+        t = A[i] - t;
+        if (i < B.size()) t -= B[i];
+        C.push_back((t + 10) % 10);
+        if (t < 0) t = 1;
+        else t = 0;
+    }
+
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return C;
+}
+```
+
