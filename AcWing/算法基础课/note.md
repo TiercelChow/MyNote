@@ -368,9 +368,96 @@ x & (~ x + 1) = 0000..010...0
 
 ### 1.7 离散化
 
+（整数、有序的离散化）
 
+解决的问题：
 
+> 数组中可能存在重复元素
 
+排序 + 去重
+
+```c++
+vector<int> alls;
+sort(alls.begin(),alls.end());
+alls.erase(unique(alls.begin(), alls.end()), alls.end());//unique()作用是去重并返回去重后的数组尾端点
+```
+
+unique()实现
+
+```c++
+vector<int>::iterator unique(vector<int> &a) {
+    int j = 0;
+    for (int i = 0; i < a.size(); i ++ ) {
+        if (!i ||a[i] != a[i - 1]) a[j ++ ] = a[i];
+    }
+    return a.begin() + j;
+}
+```
+
+模板：
+
+```c++
+vector<int> alls; // 存储所有待离散化的值
+sort(alls.begin(), alls.end()); // 将所有值排序
+alls.erase(unique(alls.begin(), alls.end()), alls.end());   // 去掉重复元素
+
+// 二分求出x对应的离散化的值
+int find(int x) // 找到第一个大于等于x的位置
+{
+    int l = 0, r = alls.size() - 1;
+    while (l < r)
+    {
+        int mid = l + r >> 1;
+        if (alls[mid] >= x) r = mid;
+        else l = mid + 1;
+    }
+    return r + 1; // 映射到1, 2, ...n
+}
+```
+
+> 如何计算出x离散化后的值
+
+二分求出x对应的离散化的值
+
+```c++
+//找到第一个大于等于x的位置
+int find(int x) {
+    int l = 0, r = alls.size() - 1;
+    while(l < r) {
+        int mid = l + r >> 1;
+        if (alls[mid] >= x) r = mid;
+        else l = mid + 1;
+    }
+    return r + 1;//映射到1,2,3...n
+}
+```
 
 ### 1.8 区间合并
+
+首先根据区间左端点对区间进行排序，然后扫描区间，扫描过程中进行合并
+
+```c++
+// 将所有存在交集的区间合并
+typedef pair<int, int> PII;
+
+void merge(vector<PII> &segs)
+{
+    vector<PII> res;
+
+    sort(segs.begin(), segs.end());
+
+    int st = -2e9, ed = -2e9;
+    for (auto seg : segs)
+        if (ed < seg.first)
+        {
+            if (st != -2e9) res.push_back({st, ed});
+            st = seg.first, ed = seg.second;
+        }
+        else ed = max(ed, seg.second);
+
+    if (st != -2e9) res.push_back({st, ed});
+
+    segs = res;
+}
+```
 
